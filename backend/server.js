@@ -6,6 +6,7 @@ import { Server } from "socket.io";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import ticketRoutes from "./routes/ticket.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 import { initSocket } from "./socket/socket.handler.js";
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tickets", ticketRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "AI Support Platform API running" });
