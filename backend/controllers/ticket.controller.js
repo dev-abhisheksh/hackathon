@@ -4,12 +4,12 @@ import Message from "../models/Message.js";
 export const createTicket = async (req, res) => {
   try {
     const { subject, description, category } = req.body;
-    
+
     const mockAiResponse = {
-        category: category || "general",
-        priority: "medium",
-        suggestedReply: "Thank you for reaching out. An agent will be with you shortly.",
-        confidence: 65
+      category: category || "general",
+      priority: "medium",
+      suggestedReply: "Thank you for reaching out. An agent will be with you shortly.",
+      confidence: 65
     };
 
     const ticket = await Ticket.create({
@@ -43,9 +43,9 @@ export const getTickets = async (req, res) => {
     if (req.user.role === "customer") {
       query.customerId = req.user._id;
     }
-    
+
     if (req.query.status) {
-        query.status = req.query.status;
+      query.status = req.query.status;
     }
 
     const tickets = await Ticket.find(query)
@@ -80,7 +80,7 @@ export const getTicketById = async (req, res) => {
 export const updateTicketStatus = async (req, res) => {
   try {
     const { status, agentId } = req.body;
-    
+
     const updateFields = {};
     if (status) updateFields.status = status;
     if (agentId) updateFields.agentId = agentId;
@@ -108,9 +108,9 @@ export const replyToTicket = async (req, res) => {
       content,
       isAiGenerated: isAiGenerated || false
     });
-    
+
     if (req.user.role === "customer") {
-        await Ticket.findByIdAndUpdate(req.params.id, { status: "open" });
+      await Ticket.findByIdAndUpdate(req.params.id, { status: "open" });
     }
 
     res.status(201).json({ success: true, data: message });

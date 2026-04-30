@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
+import useSocket from "../../hooks/useSocket";
+import { useSocketContext } from "../../context/SocketContext";
 
 const TicketThread = ({ ticketId }) => {
   const [ticketData, setTicketData] = useState(null);
   const [reply, setReply] = useState("");
+  const socket = useSocketContext();
 
   const fetchTicket = async () => {
     try {
@@ -15,8 +18,31 @@ const TicketThread = ({ ticketId }) => {
   };
 
   useEffect(() => {
-    if (ticketId) fetchTicket();
-  }, [ticketId]);
+    if (ticketId) {
+      fetchTicket();
+      if (socket) {
+        socket.emit("join_ticket", { ticketId });
+      }
+    }
+  }, [ticketId, socket]);
+
+  useSocket("new_message", (newMessage) => {
+    if (newMessage.ticketId === ticketId) {
+      setTicketData((prev) => {
+        if (!prev) return prev;
+        const exists = prev.messages.find(m => m._id === newMessage._id);
+        if (exists) return prev;
+        return { ...prev, messages: [...prev.messages, newMessage] };
+      });
+    }
+  });
+
+  useSocket("ticket_updated", (updated) => {
+    const id = typeof updated === 'string' ? updated : updated._id;
+    if (id === ticketId) {
+      fetchTicket();
+    }
+  });
 
   const handleReply = async (e) => {
     e.preventDefault();

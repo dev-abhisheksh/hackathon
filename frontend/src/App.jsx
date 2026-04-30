@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { SocketProvider } from "./context/SocketContext";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -14,15 +15,16 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <div className="min-h-screen bg-gray-50">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            <Route 
-              path="/customer/*" 
-              element={
-                <ProtectedRoute allowedRoles={["customer"]}>
+        <SocketProvider>
+          <div className="min-h-screen bg-gray-50">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              <Route 
+                path="/customer/*" 
+                element={
+                  <ProtectedRoute allowedRoles={["customer"]}>
                   <CustomerPortal />
                 </ProtectedRoute>
               } 
@@ -49,6 +51,7 @@ function App() {
             <Route path="/" element={<Navigate to="/login" replace />} />
           </Routes>
         </div>
+        </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
   );

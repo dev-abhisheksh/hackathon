@@ -6,6 +6,8 @@ import { Server } from "socket.io";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import ticketRoutes from "./routes/ticket.routes.js";
+import { initSocket } from "./socket/socket.handler.js";
+
 dotenv.config();
 
 connectDB();
@@ -32,13 +34,7 @@ app.get("/", (req, res) => {
   res.json({ success: true, message: "AI Support Platform API running" });
 });
 
-io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
-});
+initSocket(io);
 
 const PORT = process.env.PORT || 5000;
 

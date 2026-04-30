@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import api from "../../services/api";
 import ReplyBox from "./ReplyBox";
 import { useAuth } from "../../context/AuthContext";
+import useSocket from "../../hooks/useSocket";
+import { useSocketContext } from "../../context/SocketContext";
 
 const TicketDetail = ({ ticketId, onUpdate }) => {
   const [ticketData, setTicketData] = useState(null);
   const { user } = useAuth();
+  const socket = useSocketContext();
 
   const fetchTicket = async () => {
     try {
@@ -17,8 +20,33 @@ const TicketDetail = ({ ticketId, onUpdate }) => {
   };
 
   useEffect(() => {
-    if (ticketId) fetchTicket();
-  }, [ticketId]);
+    if (ticketId) {
+      fetchTicket();
+      if (socket) {
+        socket.emit("join_ticket", { ticketId });
+      }
+    }
+  }, [ticketId, socket]);
+
+  useSocket("new_message", (newMessage) => {
+    if (newMessage.ticketId === ticketId) {
+      setTicketData((prev) => {
+        if (!prev) return prev;
+        // avoid duplicate messages if the sender gets the socket event
+        const exists = prev.messages.find(m => m._id === newMessage._id);
+        if (exists) return prev;
+        return { ...prev, messages: [...prev.messages, newMessage] };
+      });
+    }
+  });
+
+  useSocket("ticket_updated", (updated) => {
+    // updated can be the ticket object or just the ID string
+    const id = typeof updated === 'string' ? updated : updated._id;
+    if (id === ticketId) {
+      fetchTicket();
+    }
+  });
 
   const updateStatus = async (status) => {
     try {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import useSocket from "../hooks/useSocket";
 import TicketQueue from "../components/agent/TicketQueue";
 import TicketDetail from "../components/agent/TicketDetail";
 import { LogOut } from "lucide-react";
@@ -22,6 +23,14 @@ const AgentDashboard = () => {
   useEffect(() => {
     fetchTickets();
   }, []);
+
+  useSocket("new_ticket", (newTicket) => {
+    setTickets((prev) => [newTicket, ...prev]);
+  });
+
+  useSocket("ticket_updated", () => {
+    fetchTickets();
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
