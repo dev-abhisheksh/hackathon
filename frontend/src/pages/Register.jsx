@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { LayoutDashboard, User, Mail, Lock, Building, Briefcase, AlertCircle } from "lucide-react";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const Register = () => {
     orgId: "",
   });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -21,6 +23,8 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
     try {
       const data = await register(formData);
       if (data.success) {
@@ -30,98 +34,150 @@ const Register = () => {
       }
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12">
-      <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
-        {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Name</label>
-            <input
-              type="text"
-              name="name"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
+    <div className="h-screen w-full bg-gray-50 flex flex-col items-center justify-center p-4 font-sans overflow-hidden">
+
+      <div className="w-full max-w-[380px] animate-in fade-in zoom-in-95 duration-500 overflow-y-auto max-h-full no-scrollbar">
+        <div className="mb-4 flex flex-col items-center shrink-0">
+          <div className="w-9 h-9 bg-slate-900 rounded-md flex items-center justify-center text-white mb-2 shadow-sm">
+            <LayoutDashboard size={20} />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Email</label>
-            <input
-              type="email"
-              name="email"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              minLength={6}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Role</label>
-            <select
-              name="role"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.role}
-              onChange={handleChange}
-            >
-              <option value="customer">Customer</option>
-              <option value="agent">Agent</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          {formData.role === "admin" && (
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2">Organization Name</label>
-              <input
-                type="text"
-                name="orgName"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.orgName}
-                onChange={handleChange}
-                required
-              />
+          <h1 className="text-sm font-bold tracking-[0.25em] text-slate-900 uppercase">Nexus</h1>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-md shadow-sm">
+          <div className="p-6">
+            <div className="mb-4">
+              <h2 className="text-base font-bold text-slate-900">Create Account</h2>
+              <p className="text-[11px] text-gray-500 font-medium">Join the enterprise network</p>
             </div>
-          )}
-          {formData.role !== "admin" && (
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2">Organization ID</label>
-              <input
-                type="text"
-                name="orgId"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.orgId}
-                onChange={handleChange}
-                required
-              />
+
+            {error && (
+              <div className="flex items-center gap-2 bg-red-50 border border-red-100 text-red-700 px-3 py-2 rounded-md mb-4 text-[10px] font-bold">
+                <AlertCircle size={12} className="shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-3">
+              {/* Name Field */}
+              <div className="space-y-1">
+                <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Full Name</label>
+                <div className="relative">
+                  <User className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                  <input
+                    type="text"
+                    name="name"
+                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-md focus:border-slate-900 focus:bg-white outline-none text-xs transition-all"
+                    placeholder="Jane Doe"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Email Field */}
+              <div className="space-y-1">
+                <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Email Address</label>
+                <div className="relative">
+                  <Mail className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                  <input
+                    type="email"
+                    name="email"
+                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-md focus:border-slate-900 focus:bg-white outline-none text-xs transition-all"
+                    placeholder="jane@nexus.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password Field */}
+              <div className="space-y-1">
+                <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                  <input
+                    type="password"
+                    name="password"
+                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-md focus:border-slate-900 focus:bg-white outline-none text-xs transition-all"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength={6}
+                  />
+                </div>
+              </div>
+
+              {/* Role & Org Fields (Side-by-Side to save vertical space) */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Role</label>
+                  <div className="relative">
+                    <Briefcase className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                    <select
+                      name="role"
+                      className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-md focus:border-slate-900 focus:bg-white outline-none text-xs transition-all appearance-none cursor-pointer"
+                      value={formData.role}
+                      onChange={handleChange}
+                    >
+                      <option value="customer">Customer</option>
+                      <option value="agent">Agent</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">
+                    {formData.role === "admin" ? "Org Name" : "Org ID"}
+                  </label>
+                  <div className="relative">
+                    <Building className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                    <input
+                      type="text"
+                      name={formData.role === "admin" ? "orgName" : "orgId"}
+                      className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-md focus:border-slate-900 focus:bg-white outline-none text-xs transition-all"
+                      placeholder={formData.role === "admin" ? "Acme Corp" : "ID-123"}
+                      value={formData.role === "admin" ? formData.orgName : formData.orgId}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-slate-900 text-white font-bold py-2 rounded-md hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-50 text-xs mt-4 shadow-sm"
+              >
+                {isLoading ? "Creating Profile..." : "Register Profile"}
+              </button>
+            </form>
+
+            <div className="mt-6 pt-4 border-t border-gray-100 text-center">
+              <p className="text-[10px] text-gray-500">
+                Member already?{" "}
+                <Link to="/login" className="text-slate-900 font-bold hover:underline underline-offset-4">
+                  Access Portal
+                </Link>
+              </p>
             </div>
-          )}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
-          >
-            Register
-          </button>
-        </form>
-        <p className="text-center mt-4">
-          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
-        </p>
+          </div>
+        </div>
+
+        <footer className="mt-4 text-[8px] font-bold text-gray-300 uppercase tracking-[0.4em] text-center">
+          Terminal Access Layer v2.0
+        </footer>
       </div>
     </div>
   );
