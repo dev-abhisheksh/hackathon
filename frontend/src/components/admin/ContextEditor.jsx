@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
+import { Save, Terminal } from "lucide-react";
 
 const ContextEditor = () => {
   const [prompt, setPrompt] = useState("");
@@ -11,58 +12,52 @@ const ContextEditor = () => {
       try {
         const res = await api.get("/admin/context");
         setPrompt(res.data.data.systemPrompt);
-      } catch (error) {
-        console.error(error);
-      }
+      } catch (error) { console.error(error); }
     };
     fetchContext();
   }, []);
 
   const handleSave = async () => {
     setSaving(true);
-    setSuccess(false);
     try {
       await api.patch("/admin/context", { systemPrompt: prompt });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (error) {
-      console.error(error);
-      alert("Failed to save context");
-    } finally {
-      setSaving(false);
-    }
+    } catch (error) { console.error(error); }
+    finally { setSaving(false); }
   };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 h-[calc(100vh-160px)]">
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-4xl h-full flex flex-col">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">AI Context Instructions</h2>
-          <p className="text-gray-500 text-sm mt-2 max-w-3xl leading-relaxed">
-            Define how the AI should behave, what knowledge it has about your organization, and what tone it should use when drafting replies or categorizing tickets. These instructions form the core prompt for the LLaMA3 model.
-          </p>
+    <div className="max-w-4xl h-[calc(99vh-120px)] flex flex-col animate-in fade-in duration-500">
+      <div className="bg-white border border-gray-200 rounded-lg flex flex-col flex-1 overflow-hidden">
+        <div className="p-6 border-b border-gray-200 bg-gray-50 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-slate-900 text-white rounded-md">
+              <Terminal size={18} />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold leading-none">System Behavior</h2>
+              <p className="text-xs text-gray-500 mt-1">Configure AI logic and organizational boundaries.</p>
+            </div>
+          </div>
+          {success && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">UPDATED</span>}
         </div>
 
-        <div className="flex-1 relative flex flex-col min-h-0 mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">System Prompt</label>
+        <div className="p-6 flex flex-col flex-1 min-h-0">
           <textarea
-            className="flex-1 w-full p-5 bg-[#F8FAFC] border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none font-mono text-sm leading-relaxed text-gray-800 transition-all shadow-inner"
+            className="flex-1 w-full p-4 bg-slate-50 border border-gray-200 rounded-md focus:border-slate-900 outline-none font-mono text-xs leading-relaxed text-slate-800 transition-all resize-none shadow-inner"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="e.g. You are a helpful support agent for Acme Corp. Acme Corp sells cloud hosting. We do not offer refunds after 30 days..."
-          ></textarea>
-        </div>
+          />
 
-        <div className="flex justify-between items-center shrink-0 border-t border-gray-100 pt-6">
-          <div className="text-sm text-gray-400 font-medium">Changes take effect immediately for all new tickets.</div>
-          <div className="flex items-center gap-4">
-            {success && <span className="text-emerald-600 text-sm font-semibold animate-pulse bg-emerald-50 px-3 py-1 rounded-full">Context updated successfully!</span>}
-            <button 
-              onClick={handleSave} 
+          <div className="mt-6 flex items-center justify-end border-t border-gray-100 pt-6 shrink-0">
+            <button
+              onClick={handleSave}
               disabled={saving}
-              className="bg-blue-600 text-white font-semibold px-8 py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-md font-bold text-sm transition-all active:scale-95 disabled:opacity-50"
             >
-              {saving ? "Saving Changes..." : "Save AI Instructions"}
+              <Save size={16} />
+              {saving ? "Processing..." : "Deploy Config"}
             </button>
           </div>
         </div>

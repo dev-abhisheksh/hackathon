@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import useSocket from "../../hooks/useSocket";
 import { useSocketContext } from "../../context/SocketContext";
 
-const TicketDetail = ({ ticketId, onUpdate }) => {
+const TicketDetail = ({ ticketId, onUpdate, hideReply = false }) => {
   const [ticketData, setTicketData] = useState(null);
   const { user } = useAuth();
   const socket = useSocketContext();
@@ -131,19 +131,22 @@ const TicketDetail = ({ ticketId, onUpdate }) => {
         ))}
       </div>
 
-      <div className="p-4 border-t bg-white h-1/3">
-        {isClosed ? (
-          <div className="flex items-center justify-center h-full flex-col text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            <span className="text-gray-500 font-medium">This ticket has been marked as <span className="uppercase font-bold tracking-wide">{ticket.status}</span>.</span>
-            <span className="text-gray-400 text-sm mt-1">No further actions can be taken.</span>
-          </div>
-        ) : (
-          <ReplyBox ticket={ticket} onReplySent={fetchTicket} />
-        )}
-      </div>
+      {!hideReply && (
+        <div className="p-4 border-t bg-white shrink-0 shadow-[0_-4px_6px_-1px_rgb(0,0,0,0.05)]">
+          {isClosed ? (
+            <div className="flex items-center justify-center py-4 flex-col text-center border-2 border-dashed border-gray-200 rounded-lg bg-gray-50/50">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <span className="text-gray-500 text-sm font-medium">This ticket is <span className="uppercase font-bold tracking-wide">{ticket.status}</span>.</span>
+            </div>
+          ) : (
+            <div className="max-h-[30vh] overflow-y-auto">
+              <ReplyBox ticket={ticket} onReplySent={fetchTicket} />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

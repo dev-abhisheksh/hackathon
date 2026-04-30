@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
 import useSocket from "../../hooks/useSocket";
+import { ArrowUpRight, Inbox, Clock, CheckCircle2, AlertOctagon } from "lucide-react";
 
 const Analytics = () => {
   const [stats, setStats] = useState(null);
@@ -9,52 +10,55 @@ const Analytics = () => {
     try {
       const res = await api.get("/admin/stats");
       setStats(res.data.data);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) { console.error(error); }
   };
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  useEffect(() => { fetchStats(); }, []);
+  useSocket("new_ticket", fetchStats);
+  useSocket("ticket_updated", fetchStats);
 
-  useSocket("new_ticket", () => fetchStats());
-  useSocket("ticket_updated", () => fetchStats());
+  if (!stats) return <div className="p-8 text-sm font-medium text-gray-400">Loading metrics...</div>;
 
-  if (!stats) return <div className="text-gray-500">Loading analytics...</div>;
+  const metrics = [
+    { label: "Total Tickets", val: stats.totalTickets, icon: Inbox, color: "text-slate-900" },
+    { label: "Pending", val: stats.openTickets, icon: Clock, color: "text-blue-600" },
+    { label: "Resolved", val: stats.resolvedTickets, icon: CheckCircle2, color: "text-emerald-600" },
+    { label: "Escalated", val: stats.technicalTickets, icon: AlertOctagon, color: "text-red-600" },
+  ];
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Organization Overview</h2>
-        <p className="text-gray-500 mt-1">Real-time metrics and system health</p>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start transition hover:shadow-md">
-          <span className="text-gray-500 text-sm font-semibold mb-3 tracking-wide uppercase">Total Tickets</span>
-          <span className="text-4xl font-bold text-gray-900">{stats.totalTickets}</span>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-blue-100 flex flex-col items-start transition hover:shadow-md relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -z-0"></div>
-          <span className="text-blue-600 text-sm font-semibold mb-3 tracking-wide uppercase z-10">Open Tickets</span>
-          <span className="text-4xl font-bold text-blue-700 z-10">{stats.openTickets}</span>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex flex-col items-start transition hover:shadow-md relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-50 rounded-bl-full -z-0"></div>
-          <span className="text-emerald-600 text-sm font-semibold mb-3 tracking-wide uppercase z-10">Resolved</span>
-          <span className="text-4xl font-bold text-emerald-700 z-10">{stats.resolvedTickets}</span>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-red-100 flex flex-col items-start transition hover:shadow-md relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-red-50 rounded-bl-full -z-0"></div>
-          <span className="text-red-500 text-sm font-semibold mb-3 tracking-wide uppercase z-10 flex items-center gap-2">Escalations <span className="bg-red-500 w-2 h-2 rounded-full animate-pulse"></span></span>
-          <span className="text-4xl font-bold text-red-600 z-10">{stats.technicalTickets}</span>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex items-end justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">System Overview</h2>
+          <p className="text-sm text-gray-500">Global ticket activity and resolution rates.</p>
         </div>
       </div>
-      
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-        <h3 className="font-semibold text-lg text-gray-900 mb-2">Team Capacity</h3>
-        <p className="text-gray-500 text-sm">Total active support agents across the organization: <span className="font-bold text-blue-600 text-lg ml-1">{stats.totalAgents}</span></p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {metrics.map((m, i) => (
+          <div key={i} className="bg-white border border-gray-200 p-5 rounded-lg">
+            <div className="flex justify-between items-start mb-4">
+              <div className={`p-2 bg-gray-50 rounded-md ${m.color}`}>
+                <m.icon size={20} />
+              </div>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Live</span>
+            </div>
+            <p className="text-3xl font-bold tracking-tight">{m.val}</p>
+            <p className="text-xs font-semibold text-gray-500 mt-1">{m.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Staffing</h3>
+        <div className="flex items-center gap-6">
+          <div className="text-4xl font-bold">{stats.totalAgents}</div>
+          <div className="h-10 w-[1px] bg-gray-200"></div>
+          <p className="text-sm text-gray-600 max-w-xs">
+            Active agents currently synchronized with the support dispatch system.
+          </p>
+        </div>
       </div>
     </div>
   );
