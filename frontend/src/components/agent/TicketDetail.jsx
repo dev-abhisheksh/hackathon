@@ -58,6 +58,16 @@ const TicketDetail = ({ ticketId, onUpdate }) => {
     }
   };
 
+  const escalateTicket = async () => {
+    try {
+      await api.patch(`/tickets/${ticketId}`, { category: "technical", priority: "urgent" });
+      fetchTicket();
+      onUpdate();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (!ticketData) return <div className="p-8 text-center text-gray-500">Loading ticket...</div>;
 
   const { ticket, messages } = ticketData;
@@ -75,18 +85,30 @@ const TicketDetail = ({ ticketId, onUpdate }) => {
               <span className="capitalize">Category: {ticket.category}</span>
             </div>
           </div>
-          <select 
-            value={ticket.status} 
-            onChange={(e) => updateStatus(e.target.value)}
-            disabled={isClosed}
-            className={`text-sm border rounded p-1 outline-none focus:ring-2 focus:ring-blue-500 ${isClosed ? 'opacity-60 cursor-not-allowed bg-gray-200 text-gray-600' : 'bg-white'}`}
-            title={isClosed ? "Ticket is locked" : "Change Status"}
-          >
-            <option value="open">Open</option>
-            <option value="in-progress">In Progress</option>
-            <option value="resolved">Resolved</option>
-            <option value="closed">Closed</option>
-          </select>
+          <div className="flex items-center gap-3">
+            {!isClosed && (
+              <button 
+                onClick={escalateTicket}
+                disabled={ticket.category === 'technical' || ticket.priority === 'urgent'}
+                className={`text-xs px-3 py-1.5 rounded font-bold uppercase tracking-wider transition-colors shadow-sm ${(ticket.category === 'technical' || ticket.priority === 'urgent') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                title="Send to Admin Escalations Queue"
+              >
+                {(ticket.category === 'technical' || ticket.priority === 'urgent') ? 'Escalated' : 'Escalate'}
+              </button>
+            )}
+            <select 
+              value={ticket.status} 
+              onChange={(e) => updateStatus(e.target.value)}
+              disabled={isClosed}
+              className={`text-sm border rounded p-1.5 outline-none focus:ring-2 focus:ring-blue-500 ${isClosed ? 'opacity-60 cursor-not-allowed bg-gray-200 text-gray-600' : 'bg-white shadow-sm'}`}
+              title={isClosed ? "Ticket is locked" : "Change Status"}
+            >
+              <option value="open">Open</option>
+              <option value="in-progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
         </div>
       </div>
 

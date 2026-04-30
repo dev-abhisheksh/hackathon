@@ -107,11 +107,13 @@ export const getTicketById = async (req, res) => {
 
 export const updateTicketStatus = async (req, res) => {
   try {
-    const { status, agentId } = req.body;
+    const { status, agentId, category, priority } = req.body;
 
     const updateFields = {};
     if (status) updateFields.status = status;
     if (agentId) updateFields.agentId = agentId;
+    if (category) updateFields.category = category;
+    if (priority) updateFields.priority = priority;
 
     const ticket = await Ticket.findByIdAndUpdate(
       req.params.id,
