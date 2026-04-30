@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { LogOut, BarChart3, Users, Settings, AlertCircle } from "lucide-react";
+import { LogOut, BarChart3, Users, Settings, AlertCircle, LayoutDashboard } from "lucide-react";
 import Analytics from "../components/admin/Analytics";
 import AgentManager from "../components/admin/AgentManager";
 import ContextEditor from "../components/admin/ContextEditor";
@@ -11,52 +11,77 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("analytics");
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white shadow px-6 py-4 flex justify-between items-center z-10">
-        <h1 className="text-xl font-bold text-gray-800">Admin Dashboard</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-gray-600">Admin: {user?.name}</span>
-          <button onClick={logout} className="text-red-500 hover:text-red-700 flex items-center gap-1">
-            <LogOut size={16} /> Logout
+    <div className="min-h-screen bg-[#F9FAFB] text-gray-800 font-sans flex flex-col">
+      <header className="bg-white border-b border-gray-100 px-8 py-4 flex justify-between items-center z-10 shadow-sm sticky top-0">
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-600 text-white p-2 rounded-lg shadow-sm">
+            <LayoutDashboard size={20} />
+          </div>
+          <h1 className="text-xl font-bold tracking-tight text-gray-900">Admin Console</h1>
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="flex flex-col items-end">
+            <span className="text-sm font-semibold text-gray-800">{user?.name}</span>
+            <span className="text-xs text-gray-500 font-medium tracking-wide uppercase">Organization Admin</span>
+          </div>
+          <button
+            onClick={logout}
+            className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors duration-150 ease-in-out"
+            title="Logout"
+          >
+            <LogOut size={20} />
           </button>
         </div>
       </header>
 
-      <div className="flex flex-1 max-w-7xl w-full mx-auto">
+      <div className="flex flex-1 w-full max-w-[1440px] mx-auto overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 bg-white border-r py-6 flex flex-col gap-2 shadow-sm z-0">
-          <button 
+        <aside className="w-72 bg-white border-r border-gray-100 py-8 flex flex-col gap-1 z-0 shrink-0">
+          <div className="px-6 mb-2 text-xs font-bold text-gray-400 tracking-wider uppercase">Menu</div>
+
+          <button
             onClick={() => setActiveTab("analytics")}
-            className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition ${activeTab === 'analytics' ? 'bg-blue-50 text-blue-700 border-r-4 border-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`flex items-center gap-4 px-6 py-3.5 text-sm font-semibold transition-all duration-150 ease-in-out ${activeTab === 'analytics' ? 'bg-blue-50/80 text-blue-700 border-l-4 border-blue-600' : 'text-gray-500 hover:bg-gray-50 border-l-4 border-transparent hover:text-gray-900'}`}
           >
-            <BarChart3 size={18} /> Analytics
+            <BarChart3 size={18} className={activeTab === 'analytics' ? 'text-blue-600' : 'text-gray-400'} />
+            Overview
           </button>
-          <button 
+
+          <button
             onClick={() => setActiveTab("escalations")}
-            className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition ${activeTab === 'escalations' ? 'bg-red-50 text-red-700 border-r-4 border-red-600' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`flex items-center gap-4 px-6 py-3.5 text-sm font-semibold transition-all duration-150 ease-in-out ${activeTab === 'escalations' ? 'bg-red-50/80 text-red-700 border-l-4 border-red-500' : 'text-gray-500 hover:bg-gray-50 border-l-4 border-transparent hover:text-gray-900'}`}
           >
-            <AlertCircle size={18} /> Escalations
+            <AlertCircle size={18} className={activeTab === 'escalations' ? 'text-red-500' : 'text-gray-400'} />
+            Escalations
+            <span className="ml-auto bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-[10px] font-bold">LIVE</span>
           </button>
-          <button 
+
+          <div className="px-6 mt-6 mb-2 text-xs font-bold text-gray-400 tracking-wider uppercase">Configuration</div>
+
+          <button
             onClick={() => setActiveTab("agents")}
-            className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition ${activeTab === 'agents' ? 'bg-blue-50 text-blue-700 border-r-4 border-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`flex items-center gap-4 px-6 py-3.5 text-sm font-semibold transition-all duration-150 ease-in-out ${activeTab === 'agents' ? 'bg-blue-50/80 text-blue-700 border-l-4 border-blue-600' : 'text-gray-500 hover:bg-gray-50 border-l-4 border-transparent hover:text-gray-900'}`}
           >
-            <Users size={18} /> Agent Management
+            <Users size={18} className={activeTab === 'agents' ? 'text-blue-600' : 'text-gray-400'} />
+            Agent Management
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab("context")}
-            className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition ${activeTab === 'context' ? 'bg-blue-50 text-blue-700 border-r-4 border-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`flex items-center gap-4 px-6 py-3.5 text-sm font-semibold transition-all duration-150 ease-in-out ${activeTab === 'context' ? 'bg-blue-50/80 text-blue-700 border-l-4 border-blue-600' : 'text-gray-500 hover:bg-gray-50 border-l-4 border-transparent hover:text-gray-900'}`}
           >
-            <Settings size={18} /> AI Context Editor
+            <Settings size={18} className={activeTab === 'context' ? 'text-blue-600' : 'text-gray-400'} />
+            AI Instructions
           </button>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8">
-          {activeTab === "analytics" && <Analytics />}
-          {activeTab === "escalations" && <Escalations />}
-          {activeTab === "agents" && <AgentManager />}
-          {activeTab === "context" && <ContextEditor />}
+        <main className="flex-1 p-8 overflow-y-auto bg-[#F9FAFB]">
+          <div className="max-w-6xl mx-auto h-full">
+            {activeTab === "analytics" && <Analytics />}
+            {activeTab === "escalations" && <Escalations />}
+            {activeTab === "agents" && <AgentManager />}
+            {activeTab === "context" && <ContextEditor />}
+          </div>
         </main>
       </div>
     </div>
