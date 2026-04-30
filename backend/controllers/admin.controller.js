@@ -11,7 +11,11 @@ export const getDashboardStats = async (req, res) => {
     const openTickets = await Ticket.countDocuments({ orgId, status: "open" });
     const resolvedTickets = await Ticket.countDocuments({ orgId, status: "resolved" });
     
-    const technicalTickets = await Ticket.countDocuments({ orgId, category: "technical" });
+    const technicalTickets = await Ticket.countDocuments({ 
+      orgId, 
+      $or: [{ category: "technical" }, { priority: "urgent" }],
+      status: { $nin: ["resolved", "closed"] } 
+    });
     const totalAgents = await User.countDocuments({ orgId, role: "agent" });
 
     res.status(200).json({
