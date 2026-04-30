@@ -13,7 +13,10 @@ const Escalations = () => {
   const fetchEscalations = async () => {
     try {
       const res = await api.get("/tickets");
-      const escalated = res.data.data.filter(t => t.category === "technical" || t.priority === "urgent");
+      const escalated = res.data.data.filter(t => 
+        (t.category === "technical" || t.priority === "urgent") && 
+        (t.status !== "resolved" && t.status !== "closed")
+      );
       setTickets(escalated);
     } catch (error) { console.error(error); }
   };
