@@ -8,8 +8,7 @@ import Register from "./pages/Register";
 import CustomerPortal from "./pages/CustomerPortal";
 import AgentDashboard from "./pages/AgentDashboard";
 
-// Placeholder page to be implemented in future batches
-const AdminPanel = () => <div className="p-8">Admin Panel</div>;
+import AdminPanel from "./pages/AdminPanel";
 
 function App() {
   return (
