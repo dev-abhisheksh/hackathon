@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { LogOut, BarChart3, Users, Settings } from "lucide-react";
+import { LogOut, BarChart3, Users, Settings, AlertCircle } from "lucide-react";
 import Analytics from "../components/admin/Analytics";
 import AgentManager from "../components/admin/AgentManager";
 import ContextEditor from "../components/admin/ContextEditor";
+import Escalations from "../components/admin/Escalations";
 
 const AdminPanel = () => {
   const { user, logout } = useAuth();
@@ -31,6 +32,12 @@ const AdminPanel = () => {
             <BarChart3 size={18} /> Analytics
           </button>
           <button 
+            onClick={() => setActiveTab("escalations")}
+            className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition ${activeTab === 'escalations' ? 'bg-red-50 text-red-700 border-r-4 border-red-600' : 'text-gray-600 hover:bg-gray-50'}`}
+          >
+            <AlertCircle size={18} /> Escalations
+          </button>
+          <button 
             onClick={() => setActiveTab("agents")}
             className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition ${activeTab === 'agents' ? 'bg-blue-50 text-blue-700 border-r-4 border-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
           >
@@ -47,6 +54,7 @@ const AdminPanel = () => {
         {/* Main Content */}
         <main className="flex-1 p-8">
           {activeTab === "analytics" && <Analytics />}
+          {activeTab === "escalations" && <Escalations />}
           {activeTab === "agents" && <AgentManager />}
           {activeTab === "context" && <ContextEditor />}
         </main>
