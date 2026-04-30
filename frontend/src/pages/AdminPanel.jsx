@@ -49,7 +49,7 @@ const AdminPanel = () => {
 
       <div className="flex flex-1 overflow-hidden">
         <aside className={`
-          fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-200 transform transition-transform lg:relative lg:translate-x-0
+          fixed top-16 bottom-0 left-0 z-30 w-64 bg-white border-r border-gray-200 transform transition-transform lg:relative lg:top-0 lg:h-full lg:translate-x-0
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}>
           <nav className="p-3 space-y-1">
