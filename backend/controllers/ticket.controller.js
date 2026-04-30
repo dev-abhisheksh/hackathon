@@ -134,6 +134,13 @@ export const replyToTicket = async (req, res) => {
   try {
     const { content, isAiGenerated } = req.body;
 
+    let ticket = await Ticket.findById(req.params.id);
+    if (!ticket) return res.status(404).json({ success: false, message: "Ticket not found" });
+
+    if (ticket.status === "resolved" || ticket.status === "closed") {
+      return res.status(400).json({ success: false, message: "Cannot reply to a resolved or closed ticket." });
+    }
+
     const message = await Message.create({
       ticketId: req.params.id,
       senderId: req.user._id,
@@ -142,9 +149,8 @@ export const replyToTicket = async (req, res) => {
       isAiGenerated: isAiGenerated || false
     });
 
-    let ticket = null;
     if (req.user.role === "customer") {
-      ticket = await Ticket.findByIdAndUpdate(req.params.id, { status: "open" });
+      ticket = await Ticket.findByIdAndUpdate(req.params.id, { status: "open" }, { new: true });
     }
 
     const io = getIo();
