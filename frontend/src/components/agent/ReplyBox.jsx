@@ -41,21 +41,21 @@ const ReplyBox = ({ ticket, onReplySent }) => {
           </div>
         )}
       </div>
-      <textarea 
+      <textarea
         className="flex-1 w-full p-2 border rounded outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none mb-2"
         placeholder="Type your reply here..."
         value={reply}
         onChange={(e) => setReply(e.target.value)}
       ></textarea>
       <div className="flex justify-end gap-2">
-        <button 
+        <button
           onClick={() => setReply(ticket.aiSuggestedReply || "")}
           className="px-4 py-2 text-sm border rounded text-gray-600 hover:bg-gray-50"
           disabled={!ticket.aiSuggestedReply || loading}
         >
           Reset to AI
         </button>
-        <button 
+        <button
           onClick={() => handleSend(reply === ticket.aiSuggestedReply)}
           className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
           disabled={loading || !reply.trim()}

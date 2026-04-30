@@ -62,6 +62,8 @@ const TicketDetail = ({ ticketId, onUpdate }) => {
 
   const { ticket, messages } = ticketData;
 
+  const isClosed = ticket.status === 'resolved' || ticket.status === 'closed';
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b bg-gray-50">
@@ -76,7 +78,9 @@ const TicketDetail = ({ ticketId, onUpdate }) => {
           <select 
             value={ticket.status} 
             onChange={(e) => updateStatus(e.target.value)}
-            className="text-sm border rounded p-1 outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={isClosed}
+            className={`text-sm border rounded p-1 outline-none focus:ring-2 focus:ring-blue-500 ${isClosed ? 'opacity-60 cursor-not-allowed bg-gray-200 text-gray-600' : 'bg-white'}`}
+            title={isClosed ? "Ticket is locked" : "Change Status"}
           >
             <option value="open">Open</option>
             <option value="in-progress">In Progress</option>
@@ -106,7 +110,17 @@ const TicketDetail = ({ ticketId, onUpdate }) => {
       </div>
 
       <div className="p-4 border-t bg-white h-1/3">
-        <ReplyBox ticket={ticket} onReplySent={fetchTicket} />
+        {isClosed ? (
+          <div className="flex items-center justify-center h-full flex-col text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span className="text-gray-500 font-medium">This ticket has been marked as <span className="uppercase font-bold tracking-wide">{ticket.status}</span>.</span>
+            <span className="text-gray-400 text-sm mt-1">No further actions can be taken.</span>
+          </div>
+        ) : (
+          <ReplyBox ticket={ticket} onReplySent={fetchTicket} />
+        )}
       </div>
     </div>
   );

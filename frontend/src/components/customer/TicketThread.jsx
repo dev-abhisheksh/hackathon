@@ -60,6 +60,8 @@ const TicketThread = ({ ticketId }) => {
 
   const { ticket, messages } = ticketData;
 
+  const isClosed = ticket.status === 'resolved' || ticket.status === 'closed';
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b bg-gray-50">
@@ -91,18 +93,24 @@ const TicketThread = ({ ticketId }) => {
       </div>
 
       <div className="p-4 border-t bg-white">
-        <form onSubmit={handleReply} className="flex gap-2">
-          <input 
-            type="text" 
-            className="flex-1 p-2 border rounded outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            placeholder="Type your reply..."
-            value={reply}
-            onChange={(e) => setReply(e.target.value)}
-          />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
-            Send
-          </button>
-        </form>
+        {isClosed ? (
+          <div className="flex items-center justify-center py-2 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+            <span className="text-gray-500 font-medium text-sm">This ticket is closed. You can no longer reply.</span>
+          </div>
+        ) : (
+          <form onSubmit={handleReply} className="flex gap-2">
+            <input 
+              type="text" 
+              className="flex-1 p-2 border rounded outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              placeholder="Type your reply..."
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+            />
+            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
+              Send
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

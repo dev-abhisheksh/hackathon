@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import TicketForm from "../components/customer/TicketForm";
 import TicketThread from "../components/customer/TicketThread";
 import { LogOut } from "lucide-react";
+import useSocket from "../hooks/useSocket";
 
 const CustomerPortal = () => {
   const [tickets, setTickets] = useState([]);
@@ -23,6 +24,15 @@ const CustomerPortal = () => {
   useEffect(() => {
     fetchTickets();
   }, []);
+
+  useSocket("ticket_updated", () => {
+    fetchTickets();
+  });
+
+  useSocket("new_message", (msg) => {
+    // Refresh tickets to update any summary or status changes triggered by messages
+    fetchTickets();
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
