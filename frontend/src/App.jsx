@@ -4,9 +4,10 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// Placeholder pages to be implemented in future batches
-const CustomerPortal = () => <div className="p-8">Customer Portal</div>;
-const AgentDashboard = () => <div className="p-8">Agent Dashboard</div>;
+import CustomerPortal from "./pages/CustomerPortal";
+import AgentDashboard from "./pages/AgentDashboard";
+
+// Placeholder page to be implemented in future batches
 const AdminPanel = () => <div className="p-8">Admin Panel</div>;
 
 function App() {
