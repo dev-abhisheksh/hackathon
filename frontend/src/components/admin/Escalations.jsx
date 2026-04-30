@@ -23,8 +23,8 @@ const Escalations = () => {
   useSocket("ticket_updated", fetchEscalations);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 h-[calc(99vh-120px)] animate-in fade-in duration-500">
-      <div className="w-full lg:w-72 flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden shrink-0">
+    <div className="flex flex-col lg:flex-row gap-4 lg:h-[calc(99vh-120px)] min-h-[calc(99vh-120px)] animate-in fade-in duration-500">
+      <div className="w-full lg:w-72 flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden shrink-0 h-[30vh] lg:h-auto">
         <div className="p-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
           <h2 className="text-xs font-bold flex items-center gap-2 uppercase tracking-wide">
             <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
@@ -45,7 +45,7 @@ const Escalations = () => {
         </div>
       </div>
 
-      <div className="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col">
+      <div className="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col h-[60vh] lg:h-auto">
         {selectedTicket ? (
           <TicketDetail ticketId={selectedTicket} onUpdate={fetchEscalations} hideReply={hideReply} />
         ) : (

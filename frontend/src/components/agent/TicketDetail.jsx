@@ -76,39 +76,37 @@ const TicketDetail = ({ ticketId, onUpdate, hideReply = false }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b bg-gray-50">
-        <div className="flex justify-between items-start">
-          <div>
-            <h2 className="text-xl font-bold">{ticket.subject}</h2>
-            <div className="flex gap-4 mt-2 text-xs text-gray-500">
-              <span>Customer: {ticket.customerId?.name}</span>
-              <span className="capitalize">Category: {ticket.category}</span>
-            </div>
+      <div className="p-3 border-b border-gray-200 bg-gray-50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shrink-0">
+        <div className="min-w-0">
+          <h2 className="text-sm font-bold text-gray-900 truncate" title={ticket.subject}>{ticket.subject}</h2>
+          <div className="flex gap-3 mt-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            <span className="truncate">User: {ticket.customerId?.name}</span>
+            <span className="truncate">Cat: {ticket.category}</span>
           </div>
-          <div className="flex items-center gap-3">
-            {!isClosed && (
-              <button 
-                onClick={escalateTicket}
-                disabled={ticket.category === 'technical' || ticket.priority === 'urgent'}
-                className={`text-xs px-3 py-1.5 rounded font-bold uppercase tracking-wider transition-colors shadow-sm ${(ticket.category === 'technical' || ticket.priority === 'urgent') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
-                title="Send to Admin Escalations Queue"
-              >
-                {(ticket.category === 'technical' || ticket.priority === 'urgent') ? 'Escalated' : 'Escalate'}
-              </button>
-            )}
-            <select 
-              value={ticket.status} 
-              onChange={(e) => updateStatus(e.target.value)}
-              disabled={isClosed}
-              className={`text-sm border rounded p-1.5 outline-none focus:ring-2 focus:ring-blue-500 ${isClosed ? 'opacity-60 cursor-not-allowed bg-gray-200 text-gray-600' : 'bg-white shadow-sm'}`}
-              title={isClosed ? "Ticket is locked" : "Change Status"}
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {!isClosed && (
+            <button 
+              onClick={escalateTicket}
+              disabled={ticket.category === 'technical' || ticket.priority === 'urgent'}
+              className={`text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wider transition-colors shadow-sm ${(ticket.category === 'technical' || ticket.priority === 'urgent') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+              title="Send to Admin Escalations Queue"
             >
-              <option value="open">Open</option>
-              <option value="in-progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
-            </select>
-          </div>
+              {(ticket.category === 'technical' || ticket.priority === 'urgent') ? 'Escalated' : 'Escalate'}
+            </button>
+          )}
+          <select 
+            value={ticket.status} 
+            onChange={(e) => updateStatus(e.target.value)}
+            disabled={isClosed}
+            className={`text-xs font-semibold border border-gray-200 rounded p-1 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 ${isClosed ? 'opacity-60 cursor-not-allowed bg-gray-100 text-gray-500' : 'bg-white text-slate-900 shadow-sm'}`}
+            title={isClosed ? "Ticket is locked" : "Change Status"}
+          >
+            <option value="open">Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
         </div>
       </div>
 
