@@ -1,20 +1,25 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
+import useSocket from "../../hooks/useSocket";
 
 const Analytics = () => {
   const [stats, setStats] = useState(null);
 
+  const fetchStats = async () => {
+    try {
+      const res = await api.get("/admin/stats");
+      setStats(res.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await api.get("/admin/stats");
-        setStats(res.data.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchStats();
   }, []);
+
+  useSocket("new_ticket", () => fetchStats());
+  useSocket("ticket_updated", () => fetchStats());
 
   if (!stats) return <div className="text-gray-500">Loading analytics...</div>;
 

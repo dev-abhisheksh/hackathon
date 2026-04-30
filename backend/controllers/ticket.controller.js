@@ -124,6 +124,7 @@ export const updateTicketStatus = async (req, res) => {
     const io = getIo();
     if (io) {
       io.to(req.params.id).emit("ticket_updated", ticket);
+      io.to(ticket.orgId.toString()).emit("ticket_updated", ticket);
     }
 
     res.status(200).json({ success: true, data: ticket });
