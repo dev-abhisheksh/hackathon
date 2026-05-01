@@ -1,7 +1,7 @@
 import Ticket from "../models/Ticket.js";
 import Message from "../models/Message.js";
 import Organization from "../models/Organization.js";
-import { classifyAndSuggest } from "../services/ai.service.js";
+import { classifyAndSuggest, handleFollowUp } from "../services/ai.service.js";
 import { getIo } from "../socket/socket.handler.js";
 
 export const createTicket = async (req, res) => {
@@ -9,10 +9,10 @@ export const createTicket = async (req, res) => {
     const { subject, description } = req.body;
 
     const org = await Organization.findById(req.user.orgId);
-    
+
     // Call real Groq AI service
     const aiResponse = await classifyAndSuggest(
-      `Subject: ${subject}\n\nDescription: ${description}`, 
+      `Subject: ${subject}\n\nDescription: ${description}`,
       org?.systemPrompt || ""
     );
 
@@ -43,7 +43,7 @@ export const createTicket = async (req, res) => {
         content: aiResponse.suggestedReply,
         isAiGenerated: true
       });
-      
+
       const io = getIo();
       if (io) {
         // Emit the new message back to the customer's thread instantly
@@ -164,41 +164,24 @@ export const replyToTicket = async (req, res) => {
 
     res.status(201).json({ success: true, data: message });
 
-    // BACKGROUND TASK: Generate AI auto-reply when a customer sends a message
     if (req.user.role === "customer" && ticket) {
       (async () => {
         try {
           const org = await Organization.findById(req.user.orgId);
-          const messages = await Message.find({ ticketId: req.params.id }).sort("createdAt");
-          
-          let chatHistory = `Subject: ${ticket.subject}\n\nChat History:\n`;
-          messages.forEach(m => {
-             chatHistory += `[${m.senderRole.toUpperCase()}]: ${m.content}\n`;
-          });
+          const aiResponse = await handleFollowUp(content, org?.systemPrompt || "");
 
-          // The AI sees the entire conversation up to this point
-          const aiResponse = await classifyAndSuggest(chatHistory, org?.systemPrompt || "");
+          if (aiResponse.canAnswer || aiResponse.reply) {
+            const aiMessage = await Message.create({
+              ticketId: req.params.id,
+              senderRole: "ai",
+              content: aiResponse.reply,
+              isAiGenerated: true
+            });
 
-          if (aiResponse.suggestedReply) {
-             // 1. Update the ticket's active suggestion
-             await Ticket.findByIdAndUpdate(req.params.id, {
-                aiSuggestedReply: aiResponse.suggestedReply,
-                confidence: aiResponse.confidence || 0
-             });
-
-             // 2. Insert the AI's reply into the chat thread
-             const aiMessage = await Message.create({
-                ticketId: req.params.id,
-                senderRole: "ai",
-                content: aiResponse.suggestedReply,
-                isAiGenerated: true
-             });
-
-             // 3. Emit real-time events to the customer and agents
-             if (io) {
-               io.to(req.params.id).emit("new_message", aiMessage);
-               io.to(req.user.orgId.toString()).emit("ticket_updated", req.params.id);
-             }
+            if (io) {
+              io.to(req.params.id).emit("new_message", aiMessage);
+              io.to(req.user.orgId.toString()).emit("ticket_updated", req.params.id);
+            }
           }
         } catch (err) {
           console.error("Background AI generation failed:", err);
