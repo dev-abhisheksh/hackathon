@@ -13,6 +13,8 @@ The JSON object must have exactly these keys:
 - "suggestedReply": (string) a professional, helpful draft reply to the customer
 - "confidence": (number) between 0 and 100 indicating how confident you are in your suggested reply
 
+Important: Never confirm, promise, or process any actions like refunds, replacements, or resolutions in your reply. Only acknowledge the issue empathetically and inform the customer that a human agent will review and follow up shortly.
+
 Customer Ticket:
 "${ticketContent}"
 `;
@@ -28,7 +30,7 @@ Customer Ticket:
           content: prompt,
         },
       ],
-      model: "llama-3.1-8b-instant",
+      model: "llama-3.3-70b-versatile",  /*llama-3.1-8b-instant*/
       temperature: 0.3,
       response_format: { type: "json_object" },
     });
