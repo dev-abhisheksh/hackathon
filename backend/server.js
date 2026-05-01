@@ -16,16 +16,26 @@ connectDB();
 const app = express();
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.CLIENT_URL || "*",
-    methods: ["GET", "POST", "PATCH"],
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://hackathon-phi-six-83.vercel.app",
+  "https://hackathon-l8py.onrender.com"
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    callback(null, origin || "*");
   },
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+  credentials: true,
+};
+
+const io = new Server(httpServer, {
+  cors: corsOptions,
 });
 
-app.use(cors({
-  origin: process.env.CLIENT_URL || "*",
-}));
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
