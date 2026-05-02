@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import useSocket from "../hooks/useSocket";
 import TicketQueue from "../components/agent/TicketQueue";
 import TicketDetail from "../components/agent/TicketDetail";
-import { LogOut, LayoutDashboard, User, ChevronLeft } from "lucide-react";
+import { LogOut, LayoutDashboard, User, ChevronLeft, Ticket as TicketIcon } from "lucide-react";
 
 const AgentDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -31,17 +31,15 @@ const AgentDashboard = () => {
           {selectedTicket && (
             <button
               onClick={() => setSelectedTicket(null)}
-              className="lg:hidden p-1 mr-1 hover:bg-gray-100 rounded-md"
+              className="lg:hidden p-1 mr-1 hover:bg-gray-100 rounded-md text-slate-600"
             >
               <ChevronLeft size={20} />
             </button>
           )}
-          <div className="w-8 h-8 bg-slate-900 rounded-md flex items-center justify-center text-white shrink-0">
-            <LayoutDashboard size={18} />
+          <div className="flex items-center gap-2">
+            <TicketIcon className="text-blue-600" size={20} />
+            <h1 className="text-lg font-bold tracking-tight text-slate-900 hidden sm:block">Nexus <span className="text-blue-600 font-black">Agent</span></h1>
           </div>
-          <h1 className="text-sm font-bold tracking-widest uppercase truncate">
-            {selectedTicket ? "Session Detail" : "Workspace"}
-          </h1>
         </div>
 
         <div className="flex items-center gap-2">

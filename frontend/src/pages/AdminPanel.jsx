@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { LogOut, BarChart3, Users, Settings, AlertCircle, LayoutDashboard, Menu, X } from "lucide-react";
+import { LogOut, BarChart3, Users, Settings, AlertCircle, LayoutDashboard, Menu, X, Ticket as TicketIcon } from "lucide-react";
 import Analytics from "../components/admin/Analytics";
 import AgentManager from "../components/admin/AgentManager";
 import ContextEditor from "../components/admin/ContextEditor";
@@ -26,10 +26,8 @@ const AdminPanel = () => {
             {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-slate-900 rounded-md flex items-center justify-center text-white">
-              <LayoutDashboard size={18} />
-            </div>
-            <span className="font-bold tracking-tight text-lg">NEXUS</span>
+            <TicketIcon className="text-blue-600" size={22} />
+            <span className="font-bold tracking-tight text-lg">Nexus <span className="text-blue-600 font-black">Admin</span></span>
           </div>
         </div>
 
