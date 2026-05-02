@@ -34,6 +34,19 @@ const TicketDetail = ({ ticketId, onUpdate, hideReply = false }) => {
     }
   });
 
+  const [liveCustomerText, setLiveCustomerText] = useState("");
+  const [typingTimeoutState, setTypingTimeoutState] = useState(null);
+
+  useSocket("customer_is_typing", ({ text }) => {
+    setLiveCustomerText(text);
+    if (typingTimeoutState) clearTimeout(typingTimeoutState);
+    
+    const timeout = setTimeout(() => {
+      setLiveCustomerText("");
+    }, 3000);
+    setTypingTimeoutState(timeout);
+  });
+
   const updateStatus = async (status) => {
     try {
       await api.patch(`/tickets/${ticketId}`, { status });
@@ -120,7 +133,7 @@ const TicketDetail = ({ ticketId, onUpdate, hideReply = false }) => {
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Thread locked: {ticket.status}</span>
             </div>
           ) : (
-            <ReplyBox ticket={ticket} onReplySent={fetchTicket} />
+            <ReplyBox ticket={ticket} onReplySent={fetchTicket} liveCustomerText={liveCustomerText} />
           )}
         </div>
       )}

@@ -104,7 +104,12 @@ const TicketThread = ({ ticketId }) => {
               className="flex-1 p-2 border rounded outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               placeholder="Type your reply..."
               value={reply}
-              onChange={(e) => setReply(e.target.value)}
+              onChange={(e) => {
+                setReply(e.target.value);
+                if (socket) {
+                  socket.emit("customer_typing", { ticketId, text: e.target.value });
+                }
+              }}
             />
             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
               Send
