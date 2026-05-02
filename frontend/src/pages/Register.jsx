@@ -10,7 +10,7 @@ const Register = () => {
     password: "",
     role: "customer",
     orgName: "",
-    orgId: "",
+    orgCode: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -136,16 +136,16 @@ const Register = () => {
 
                 <div className="space-y-1">
                   <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">
-                    {formData.role === "admin" ? "Org Name" : "Org ID"}
+                    {formData.role === "admin" ? "Org Name" : "Org Code"}
                   </label>
                   <div className="relative">
                     <Building className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
                     <input
                       type="text"
-                      name={formData.role === "admin" ? "orgName" : "orgId"}
-                      className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-md focus:border-slate-900 focus:bg-white outline-none text-xs transition-all"
-                      placeholder={formData.role === "admin" ? "Acme Corp" : "ID-123"}
-                      value={formData.role === "admin" ? formData.orgName : formData.orgId}
+                      name={formData.role === "admin" ? "orgName" : "orgCode"}
+                      className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-md focus:border-slate-900 focus:bg-white outline-none text-xs transition-all uppercase"
+                      placeholder={formData.role === "admin" ? "Acme Corp" : "6-CHAR CODE"}
+                      value={formData.role === "admin" ? formData.orgName : formData.orgCode}
                       onChange={handleChange}
                       required
                     />

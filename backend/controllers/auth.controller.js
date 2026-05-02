@@ -10,7 +10,7 @@ const generateToken = (id) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role, orgName } = req.body;
+    const { name, email, password, role, orgName, orgCode } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -19,6 +19,7 @@ export const registerUser = async (req, res) => {
     }
 
     let orgId = null;
+    let actualOrgCode = null;
 
     if (role === "admin") {
       if (!orgName) {
@@ -26,11 +27,17 @@ export const registerUser = async (req, res) => {
       }
       const organization = await Organization.create({ name: orgName });
       orgId = organization._id;
+      actualOrgCode = organization.orgCode;
     } else {
-       orgId = req.body.orgId;
-       if (!orgId) {
-           return res.status(400).json({ success: false, message: "Organization ID required" });
+       if (!orgCode) {
+           return res.status(400).json({ success: false, message: "Organization Code required" });
        }
+       const organization = await Organization.findOne({ orgCode: orgCode.toUpperCase() });
+       if (!organization) {
+           return res.status(400).json({ success: false, message: "Invalid Organization Code" });
+       }
+       orgId = organization._id;
+       actualOrgCode = organization.orgCode;
     }
 
     const user = await User.create({
@@ -53,6 +60,7 @@ export const registerUser = async (req, res) => {
         email: user.email,
         role: user.role,
         orgId: user.orgId,
+        orgCode: actualOrgCode,
         token: generateToken(user._id),
       },
     });
@@ -65,7 +73,7 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).select("+password").populate("orgId", "orgCode");
 
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ success: false, message: "Invalid credentials" });
@@ -78,7 +86,8 @@ export const loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        orgId: user.orgId,
+        orgId: user.orgId ? user.orgId._id : null,
+        orgCode: user.orgId ? user.orgId.orgCode : null,
         token: generateToken(user._id),
       },
     });
@@ -89,7 +98,7 @@ export const loginUser = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate("orgId", "name domain");
+    const user = await User.findById(req.user.id).populate("orgId", "name domain orgCode");
     res.status(200).json({ success: true, data: user });
   } catch (error) {
      res.status(500).json({ success: false, message: error.message });
