@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { LayoutDashboard, Lock, Mail, AlertCircle } from "lucide-react";
+import { LayoutDashboard, Lock, Mail, AlertCircle, Ticket as TicketIcon } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -33,11 +33,9 @@ const Login = () => {
     <div className="h-screen w-full bg-gray-50 flex flex-col items-center justify-center p-4 font-sans overflow-hidden">
 
       <div className="w-full max-w-[360px] animate-in fade-in zoom-in-95 duration-500">
-        <div className="mb-6 flex flex-col items-center shrink-0">
-          <div className="w-9 h-9 bg-slate-900 rounded-md flex items-center justify-center text-white mb-2 shadow-sm">
-            <LayoutDashboard size={20} />
-          </div>
-          <h1 className="text-sm font-bold tracking-[0.25em] text-slate-900 uppercase">Nexus</h1>
+        <div className="mb-6 flex flex-col items-center shrink-0 gap-2">
+          <TicketIcon className="text-blue-600" size={36} />
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Nexus <span className="text-blue-600 font-black">Support</span></h1>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-md shadow-sm">
