@@ -3,7 +3,7 @@ import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import TicketForm from "../components/customer/TicketForm";
 import TicketThread from "../components/customer/TicketThread";
-import { LogOut } from "lucide-react";
+import { LogOut, Plus, ChevronLeft, Ticket as TicketIcon } from "lucide-react";
 import useSocket from "../hooks/useSocket";
 
 const CustomerPortal = () => {
@@ -29,68 +29,106 @@ const CustomerPortal = () => {
     fetchTickets();
   });
 
-  useSocket("new_message", (msg) => {
-    // Refresh tickets to update any summary or status changes triggered by messages
+  useSocket("new_message", () => {
     fetchTickets();
   });
 
+  const handleBack = () => {
+    setSelectedTicket(null);
+    setShowForm(false);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white shadow px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-gray-800">Support Portal</h1>
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden font-sans text-slate-900">
+      {/* Header */}
+      <header className="bg-slate-900 text-white px-4 md:px-6 py-3 flex justify-between items-center shrink-0 z-20 shadow-md">
+        <div className="flex items-center gap-2">
+          <TicketIcon className="text-blue-400" size={20} />
+          <h1 className="text-lg font-bold tracking-tight">Nexus <span className="text-blue-400 font-black">Support</span></h1>
+        </div>
         <div className="flex items-center gap-4">
-          <span className="text-gray-600">Welcome, {user?.name}</span>
-          <button onClick={logout} className="text-red-500 hover:text-red-700 flex items-center gap-1">
-            <LogOut size={16} /> Logout
+          <span className="text-xs font-medium text-slate-300 hidden sm:inline-block">Welcome, {user?.name}</span>
+          <button onClick={logout} className="text-xs font-bold uppercase tracking-widest text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors">
+            <LogOut size={14} /> <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
       </header>
 
-      <main className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-6">
-        <div className="w-full md:w-1/3 bg-white rounded-lg shadow flex flex-col h-[50vh] md:h-[calc(100vh-100px)]">
-          <div className="p-4 border-b flex justify-between items-center">
-            <h2 className="font-semibold text-lg">Your Tickets</h2>
+      {/* Main Layout */}
+      <main className="flex-1 flex overflow-hidden relative">
+        
+        {/* Sidebar: Ticket List */}
+        <aside className={`
+          absolute inset-0 z-10 w-full bg-white border-r border-gray-200 flex flex-col shrink-0 transition-transform duration-300 ease-in-out
+          md:relative md:translate-x-0 md:w-80 lg:w-96
+          ${(selectedTicket || showForm) ? "-translate-x-full md:translate-x-0" : "translate-x-0"}
+        `}>
+          <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
+            <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">Your Tickets</h2>
             <button 
               onClick={() => { setShowForm(true); setSelectedTicket(null); }}
-              className="bg-blue-600 text-white px-3 py-1 text-sm rounded hover:bg-blue-700"
+              className="bg-blue-600 text-white px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded flex items-center gap-1 hover:bg-blue-700 transition-colors shadow-sm"
             >
-              + New
+              <Plus size={12} /> New
             </button>
           </div>
-          <div className="overflow-y-auto p-4 flex-1">
+          
+          <div className="overflow-y-auto flex-1 bg-slate-50/50">
             {tickets.length === 0 ? (
-              <p className="text-gray-500 text-center text-sm mt-10">No tickets found.</p>
+              <div className="flex flex-col items-center justify-center h-full text-slate-400 p-6 text-center">
+                <TicketIcon size={32} className="mb-2 opacity-20" />
+                <p className="text-xs font-medium">No tickets found.</p>
+                <p className="text-[10px]">Create one to get started.</p>
+              </div>
             ) : (
               tickets.map(ticket => (
                 <div 
                   key={ticket._id} 
                   onClick={() => { setSelectedTicket(ticket._id); setShowForm(false); }}
-                  className={`p-3 border-b cursor-pointer hover:bg-gray-50 transition ${selectedTicket === ticket._id ? "bg-blue-50 border-blue-500 border-l-4" : ""}`}
+                  className={`p-4 border-b border-gray-100 cursor-pointer transition-all ${selectedTicket === ticket._id ? "bg-blue-50/50 border-l-4 border-l-blue-600" : "hover:bg-white border-l-4 border-l-transparent"}`}
                 >
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="font-medium text-sm truncate">{ticket.subject}</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider ${ticket.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                  <div className="flex justify-between items-start mb-1.5 gap-2">
+                    <span className="font-bold text-xs text-slate-800 truncate leading-tight">{ticket.subject}</span>
+                    <span className={`shrink-0 text-[9px] px-1.5 py-0.5 rounded uppercase font-black tracking-tighter ${ticket.status === 'open' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-500 border border-gray-200'}`}>
                       {ticket.status}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 truncate">{ticket.description}</p>
+                  <p className="text-[10px] text-slate-500 line-clamp-2 leading-relaxed">{ticket.description}</p>
                 </div>
               ))
             )}
           </div>
-        </div>
+        </aside>
 
-        <div className="w-full md:w-2/3 bg-white rounded-lg shadow overflow-hidden h-[60vh] md:h-[calc(100vh-100px)]">
-          {showForm ? (
-            <TicketForm onSuccess={() => { setShowForm(false); fetchTickets(); }} />
-          ) : selectedTicket ? (
-            <TicketThread ticketId={selectedTicket} />
-          ) : (
-            <div className="h-full flex items-center justify-center text-gray-400">
-              Select a ticket or create a new one
-            </div>
-          )}
-        </div>
+        {/* Main Content Area */}
+        <section className={`
+          flex-1 bg-white overflow-hidden relative flex flex-col transition-transform duration-300 ease-in-out
+          ${!(selectedTicket || showForm) ? "translate-x-full md:translate-x-0" : "translate-x-0"}
+        `}>
+          {/* Mobile Back Button Header */}
+          <div className="md:hidden p-3 border-b border-gray-200 bg-white flex items-center shrink-0">
+            <button 
+              onClick={handleBack}
+              className="flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900 uppercase tracking-wider"
+            >
+              <ChevronLeft size={16} /> Back to List
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-hidden relative">
+            {showForm ? (
+              <TicketForm onSuccess={() => { setShowForm(false); fetchTickets(); }} />
+            ) : selectedTicket ? (
+              <TicketThread ticketId={selectedTicket} />
+            ) : (
+              <div className="hidden md:flex h-full flex-col items-center justify-center text-slate-300 bg-slate-50">
+                <TicketIcon size={48} className="mb-4 opacity-20" />
+                <p className="text-sm font-medium tracking-wide">Select a ticket or create a new one</p>
+              </div>
+            )}
+          </div>
+        </section>
+
       </main>
     </div>
   );
