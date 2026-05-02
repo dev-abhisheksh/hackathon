@@ -20,6 +20,13 @@ export const initSocket = (io) => {
       }
     });
 
+    socket.on("customer_typing", ({ ticketId, text }) => {
+      if (ticketId) {
+        // Broadcast to everyone else in the ticket room (specifically the agent)
+        socket.to(ticketId).emit("customer_is_typing", { text });
+      }
+    });
+
     socket.on("disconnect", () => {
       console.log(`Socket disconnected: ${socket.id}`);
     });
