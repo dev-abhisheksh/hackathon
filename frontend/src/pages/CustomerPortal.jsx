@@ -46,8 +46,8 @@ const CustomerPortal = () => {
         </div>
       </header>
 
-      <main className="flex-1 max-w-5xl w-full mx-auto p-6 flex gap-6">
-        <div className="w-1/3 bg-white rounded-lg shadow flex flex-col h-[calc(100vh-100px)]">
+      <main className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-6">
+        <div className="w-full md:w-1/3 bg-white rounded-lg shadow flex flex-col h-[50vh] md:h-[calc(100vh-100px)]">
           <div className="p-4 border-b flex justify-between items-center">
             <h2 className="font-semibold text-lg">Your Tickets</h2>
             <button 
@@ -80,7 +80,7 @@ const CustomerPortal = () => {
           </div>
         </div>
 
-        <div className="w-2/3 bg-white rounded-lg shadow overflow-hidden h-[calc(100vh-100px)]">
+        <div className="w-full md:w-2/3 bg-white rounded-lg shadow overflow-hidden h-[60vh] md:h-[calc(100vh-100px)]">
           {showForm ? (
             <TicketForm onSuccess={() => { setShowForm(false); fetchTickets(); }} />
           ) : selectedTicket ? (

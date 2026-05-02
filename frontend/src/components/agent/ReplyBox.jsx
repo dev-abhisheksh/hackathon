@@ -99,8 +99,8 @@ const ReplyBox = ({ ticket, onReplySent, liveCustomerText }) => {
         disabled={loading}
       />
 
-      <div className="flex justify-between items-center gap-2">
-        <div className="flex gap-2 items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
           <div className="flex bg-gray-100 p-0.5 rounded-md border border-gray-200">
             <button disabled={loading || !reply.trim()} onClick={() => handleTune('professional')} className="px-2 py-1 text-[9px] font-bold uppercase text-gray-600 hover:bg-white hover:shadow-sm rounded disabled:opacity-30 transition-all">Pro</button>
             <button disabled={loading || !reply.trim()} onClick={() => handleTune('empathetic')} className="px-2 py-1 text-[9px] font-bold uppercase text-gray-600 hover:bg-white hover:shadow-sm rounded disabled:opacity-30 transition-all">Empathetic</button>
@@ -123,17 +123,17 @@ const ReplyBox = ({ ticket, onReplySent, liveCustomerText }) => {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto justify-end shrink-0">
           <button
             onClick={() => setReply(ticket.aiSuggestedReply || "")}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-tight text-gray-500 hover:text-slate-900 transition-colors disabled:opacity-20"
+            className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-tight text-gray-500 hover:text-slate-900 transition-colors disabled:opacity-20 flex-1 sm:flex-none"
             disabled={!ticket.aiSuggestedReply || loading}
           >
             <RotateCcw size={12} /> Sync AI
           </button>
           <button
             onClick={() => handleSend(reply === ticket.aiSuggestedReply)}
-            className="flex items-center gap-1.5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-50"
+            className="flex items-center justify-center gap-1.5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-50 flex-1 sm:flex-none"
             disabled={loading || !reply.trim()}
           >
             <Send size={12} />
