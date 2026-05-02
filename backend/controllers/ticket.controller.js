@@ -1,7 +1,7 @@
 import Ticket from "../models/Ticket.js";
 import Message from "../models/Message.js";
 import Organization from "../models/Organization.js";
-import { classifyAndSuggest, handleFollowUp } from "../services/ai.service.js";
+import { classifyAndSuggest, handleFollowUp, tuneTone, translateText, draftFromLiveText } from "../services/ai.service.js";
 import { getIo } from "../socket/socket.handler.js";
 
 export const createTicket = async (req, res) => {
@@ -189,6 +189,45 @@ export const replyToTicket = async (req, res) => {
       })();
     }
 
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const tuneMessageTone = async (req, res) => {
+  try {
+    const { text, tone } = req.body;
+    if (!text || !tone) return res.status(400).json({ success: false, message: "Text and tone required" });
+    
+    // We don't necessarily need org context for tone tuning, but it could help.
+    const tunedText = await tuneTone(text, tone);
+    res.status(200).json({ success: true, data: tunedText });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const translateMessage = async (req, res) => {
+  try {
+    const { text, targetLanguage } = req.body;
+    if (!text || !targetLanguage) return res.status(400).json({ success: false, message: "Text and targetLanguage required" });
+    
+    const translatedText = await translateText(text, targetLanguage);
+    res.status(200).json({ success: true, data: translatedText });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const generateLiveDraft = async (req, res) => {
+  try {
+    const { liveText } = req.body;
+    if (!liveText) return res.status(400).json({ success: false, message: "liveText required" });
+    
+    const org = await Organization.findById(req.user.orgId);
+    const draftText = await draftFromLiveText(liveText, org?.systemPrompt || "");
+    
+    res.status(200).json({ success: true, data: draftText });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

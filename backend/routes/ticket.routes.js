@@ -1,5 +1,5 @@
 import express from "express";
-import { createTicket, getTickets, getTicketById, updateTicketStatus, replyToTicket } from "../controllers/ticket.controller.js";
+import { createTicket, getTickets, getTicketById, updateTicketStatus, replyToTicket, tuneMessageTone, translateMessage, generateLiveDraft } from "../controllers/ticket.controller.js";
 import protect from "../middleware/auth.middleware.js";
 import authorize from "../middleware/role.middleware.js";
 
@@ -17,5 +17,14 @@ router.route("/:id")
 
 router.route("/:id/reply")
   .post(replyToTicket);
+
+router.route("/:id/tune")
+  .post(authorize("admin", "agent"), tuneMessageTone);
+
+router.route("/:id/translate")
+  .post(authorize("admin", "agent"), translateMessage);
+
+router.route("/:id/live-draft")
+  .post(authorize("admin", "agent"), generateLiveDraft);
 
 export default router;
