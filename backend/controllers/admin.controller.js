@@ -75,13 +75,10 @@ export const createAgent = async (req, res) => {
       return res.status(400).json({ success: false, message: "User already exists" });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     const agent = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password: password,
       role: "agent",
       orgId: req.user.orgId
     });
