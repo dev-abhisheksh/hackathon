@@ -71,6 +71,7 @@ const AgentDashboard = () => {
               tickets={tickets}
               selectedTicket={selectedTicket}
               onSelect={(id) => setSelectedTicket(id)}
+              currentUser={user}
             />
           </div>
         </aside>

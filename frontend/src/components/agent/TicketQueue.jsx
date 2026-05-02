@@ -1,16 +1,71 @@
-import React from "react";
+import React, { useState } from "react";
 
-const TicketQueue = ({ tickets, selectedTicket, onSelect }) => {
+const TicketQueue = ({ tickets, selectedTicket, onSelect, currentUser }) => {
+  const [activeTab, setActiveTab] = useState("active");
+
+  const tabs = [
+    { id: "active", label: "Active" },
+    { id: "mine", label: "Mine" },
+    { id: "unassigned", label: "Unassigned" },
+    { id: "resolved", label: "Resolved" },
+  ];
+
+  // 1. Filter Tickets
+  const filteredTickets = tickets.filter(ticket => {
+    const isResolvedOrClosed = ticket.status === "resolved" || ticket.status === "closed";
+    
+    if (activeTab === "active") return !isResolvedOrClosed;
+    if (activeTab === "resolved") return isResolvedOrClosed;
+    
+    if (activeTab === "mine") {
+      const agentId = ticket.agentId?._id || ticket.agentId;
+      return !isResolvedOrClosed && agentId === currentUser?._id;
+    }
+    
+    if (activeTab === "unassigned") {
+      return !isResolvedOrClosed && !ticket.agentId;
+    }
+
+    return true;
+  });
+
+  // 2. Sort Tickets: Urgent first, then by createdAt (newest first)
+  const sortedTickets = [...filteredTickets].sort((a, b) => {
+    if (a.priority === "urgent" && b.priority !== "urgent") return -1;
+    if (b.priority === "urgent" && a.priority !== "urgent") return 1;
+    
+    // Fallback to createdAt if priority is the same or neither is urgent
+    const dateA = new Date(a.createdAt || 0);
+    const dateB = new Date(b.createdAt || 0);
+    return dateB - dateA;
+  });
+
   return (
     <div className="flex flex-col h-full bg-white font-sans overflow-hidden">
-      {/* Search/Header area could go here, but keeping it minimal as requested */}
+      {/* Tabs Header */}
+      <div className="flex border-b border-gray-200 shrink-0 bg-gray-50/50">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors border-b-2 ${
+              activeTab === tab.id 
+                ? "border-slate-900 text-slate-900 bg-white" 
+                : "border-transparent text-gray-400 hover:text-slate-700 hover:bg-gray-100/50"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       <div className="overflow-y-auto flex-1 divide-y divide-gray-100">
-        {tickets.length === 0 ? (
+        {sortedTickets.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 opacity-40">
             <p className="text-[10px] font-black uppercase tracking-[0.2em]">Queue Empty</p>
           </div>
         ) : (
-          tickets.map((ticket) => (
+          sortedTickets.map((ticket) => (
             <div
               key={ticket._id}
               onClick={() => onSelect(ticket._id)}
