@@ -12,7 +12,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      const socketInstance = io(import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000");
+      const socketInstance = io(import.meta.env.VITE_API_URL?.replace("/api", "") || "https://hackathon-l8py.onrender.com");
 
       setSocket(socketInstance);
 
