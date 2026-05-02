@@ -35,7 +35,7 @@ const AdminPanel = () => {
           <div className="hidden sm:block text-right">
             <p className="text-sm font-semibold leading-none">{user?.name || "Administrator"}</p>
             <p className="text-[10px] text-gray-500 font-medium uppercase mt-1">
-              Org Admin <span className="text-blue-500 font-bold ml-1 px-1.5 py-0.5 bg-blue-50 rounded">Code: {user?.orgCode}</span>
+              Org Admin <span className="text-blue-500 font-bold ml-1 px-1.5 py-0.5 bg-blue-50 rounded">Code: {user?.orgCode || user?.orgId?.toString().slice(-6).toUpperCase()}</span>
             </p>
           </div>
           <button

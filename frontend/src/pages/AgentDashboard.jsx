@@ -47,7 +47,7 @@ const AgentDashboard = () => {
             <User size={14} className="text-gray-400" />
             <span className="text-xs font-bold">{user?.name}</span>
             <span className="text-[10px] text-blue-500 font-black uppercase ml-1 px-1.5 py-0.5 bg-blue-50 rounded">
-              Code: {user?.orgCode}
+              Code: {user?.orgCode || user?.orgId?.toString().slice(-6).toUpperCase()}
             </span>
           </div>
           <button onClick={logout} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors">
