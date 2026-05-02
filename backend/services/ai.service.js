@@ -82,3 +82,71 @@ Customer message: "${customerMessage}"
     return { canAnswer: false, reply: "We've received your message and have assigned a support agent to your case. They will follow up with you shortly." };
   }
 };
+
+export const tuneTone = async (text, tone) => {
+  try {
+    const prompt = `Rewrite the following text to sound more ${tone}. 
+Keep the core meaning exactly the same, but adjust the vocabulary and sentence structure to fit the requested tone.
+Respond ONLY with the rewritten text, without any quotes or explanations.
+
+Text to rewrite:
+"${text}"`;
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: "user", content: prompt }],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.5,
+    });
+
+    return chatCompletion.choices[0]?.message?.content?.trim() || text;
+  } catch (error) {
+    console.error("AI Tone Tuning Error:", error);
+    return text;
+  }
+};
+
+export const translateText = async (text, targetLanguage) => {
+  try {
+    const prompt = `Translate the following text into ${targetLanguage}.
+Respond ONLY with the translated text, without any quotes or explanations.
+
+Text to translate:
+"${text}"`;
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: "user", content: prompt }],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.2,
+    });
+
+    return chatCompletion.choices[0]?.message?.content?.trim() || text;
+  } catch (error) {
+    console.error("AI Translation Error:", error);
+    return text;
+  }
+};
+
+export const draftFromLiveText = async (liveText, orgContext) => {
+  try {
+    const prompt = `
+You are a customer support agent for: "${orgContext}".
+A customer is currently typing a message, but hasn't sent it yet. The text might be incomplete.
+
+Customer is typing:
+"${liveText}"
+
+Based on this partial text, anticipate their question or issue, and draft a helpful, professional response.
+Respond ONLY with the draft text, no quotes, no explanations. Do not promise refunds or confirm actions.`;
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: "user", content: prompt }],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.4,
+    });
+
+    return chatCompletion.choices[0]?.message?.content?.trim() || "I see you are typing. I'm here to help!";
+  } catch (error) {
+    console.error("AI Live Draft Error:", error);
+    return "Looking into this for you...";
+  }
+};
