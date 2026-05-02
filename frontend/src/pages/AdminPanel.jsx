@@ -19,7 +19,7 @@ const AdminPanel = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 text-slate-900 flex flex-col">
+    <div className="h-screen bg-gray-50 text-slate-900 flex flex-col">
       <header className="h-16 bg-white border-b border-gray-200 px-4 md:px-6 flex justify-between items-center sticky top-0 z-40">
         <div className="flex items-center gap-4">
           <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="lg:hidden p-2 hover:bg-gray-100 rounded-md">

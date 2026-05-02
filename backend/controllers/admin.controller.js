@@ -18,6 +18,26 @@ export const getDashboardStats = async (req, res) => {
     });
     const totalAgents = await User.countDocuments({ orgId, role: "agent" });
 
+    const ticketsByStatus = await Ticket.aggregate([
+      { $match: { orgId } },
+      { $group: { _id: "$status", count: { $sum: 1 } } }
+    ]);
+
+    const ticketsByPriority = await Ticket.aggregate([
+      { $match: { orgId } },
+      { $group: { _id: "$priority", count: { $sum: 1 } } }
+    ]);
+
+    const ticketsByCategory = await Ticket.aggregate([
+      { $match: { orgId } },
+      { $group: { _id: "$category", count: { $sum: 1 } } }
+    ]);
+
+    const aiConfidenceByCategory = await Ticket.aggregate([
+      { $match: { orgId, confidence: { $exists: true, $ne: null } } },
+      { $group: { _id: "$category", averageConfidence: { $avg: "$confidence" } } }
+    ]);
+
     res.status(200).json({
       success: true,
       data: {
@@ -25,7 +45,11 @@ export const getDashboardStats = async (req, res) => {
         openTickets,
         resolvedTickets,
         technicalTickets,
-        totalAgents
+        totalAgents,
+        ticketsByStatus,
+        ticketsByPriority,
+        ticketsByCategory,
+        aiConfidenceByCategory
       }
     });
   } catch (error) {
